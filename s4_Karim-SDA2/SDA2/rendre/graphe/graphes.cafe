@@ -1,0 +1,65 @@
+** fichier graphes.cafe
+
+mod! GRAPH-NAT0 {
+extending(NAT)            ** les sommets sont étiquetés par des entiers naturels
+
+[ Graphe ]            ** sorte Graphe
+** constructeurs
+op grvide : -> Graphe                       -- graphe vide
+op adjs : Graphe Nat -> Graphe         -- adjonction d'un sommet
+op adja : Graphe Nat Nat -> Graphe      -- adjonction d'un arc
+
+op sups : Graphe Nat -> Graphe
+op supa : Graphe Nat Nat -> Graphe
+
+op exs : Graphe Nat -> Bool             -- existence d'un sommet
+op exa : Graphe Nat Nat -> Bool         -- existence d'une arête
+op di : Graphe Nat -> Nat                   -- degré intérieur
+op de : Graphe Nat -> Nat               -- degré extérieur
+
+op exemple1 : -> Graphe                 -- exemple
+
+vars g : Graphe .
+vars x y u v : Nat .
+
+** préconditions
+-- pre adjs(G, x) = not exs(G,x)
+-- pre adja(G,x,y) = exs(g, x) and exs(g,y) and not exa(G,x)
+-- pre sups(G,x) = exs(G,x)
+** dans la suite nous allons essayer de nous abstraire de ces préconditions
+
+eq exs(grvide,x) = false .
+eq exs(adjs(g,y),x) = if x == y then true else exs(g,x) fi .
+eq exs(adja(g,u,v),x) = exs(g,x) .
+
+ceq adjs(g,x) = g if exs(g,x) .  -- évite la première précondtion
+
+eq exa(grvide, x, y) = false .
+eq exa(adjs(g,u), x, y) = exa(g,x,y) .
+eq exa(adja(g,u,v), x, y) = if x == u and y == v then true else exa(g,x,y) fi .
+
+ceq adja(g, x, y) = g if exa(g, x, y) .
+
+eq di(grvide, x) = 0 .
+eq di(adjs(g,y), x) = if x == y then 0 else di(g,x) fi . -- limite un peu la recherche
+eq di(adja(g,u,v), x) = if x == v then di(g,x) + 1 else di(g,x) fi .
+
+eq exemple1 = adja(adja(adja(adja(adjs(adjs(adjs(adjs(grvide,1),3),7), 9), 3,9), 1,9), 3,7), 3,1) .
+
+** exercice :
+** axiomes pour les suppressions
+** axiomes pour de (degré extérieur)
+
+
+eq sups(grvide,x) = grvide .
+eq sups(adjs(g,x),y) = if x == y then  g else adjs(sups(g,y),x) fi .
+eq sups(adja(g,u,v),x) = adja(sups(g,x),u,v) .
+
+eq supa(grvide,u,v)=grvide .
+eq supa(adja(g,u,v),x,y)= if u==x && y==v then g else adja(supa(g,x,y),u,v) fi .
+eq supa(adjs(g,u),x,y)=adjs(supa(g,x,y),u) .
+
+eq de(grvide, x)=0 .
+eq de (adjs(g,y),x)= if y==x then 0 else de(g,x) fi .
+eq de (adja(g,u,v),x)= if x==u then 1+de(g,x) else de(g,x) fi .
+}

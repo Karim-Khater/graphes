@@ -1,0 +1,34 @@
+** fichier set.cafe
+mod! SET-NAT {
+extending(NAT)
+[ Set ]
+
+op empty : -> Set               -- ensemble vide
+op i : Nat Set -> Set           -- insertion
+op _ in _ : Nat Set -> Bool     -- appartenance
+op sup : Nat Set -> Set         -- suppression 
+op is-empty : Set -> Bool       -- test de vacuité
+
+-- preconditions
+-- cafeobj suit une autre approche que les préconditions (les sortes ordonnées)
+-- on ne peut donc indiquer les préconditions qu'en commentaires
+vars n n1 : Nat .
+vars s : Set .
+** pre i(n, s) = not (n in s )
+** en fait ici, on va employer une équation condtionnelle
+ceq i(n,s) = s if (n in s) .
+
+** suppression
+** on ne met pas de précondition 
+** et on utilise un if then else fi
+eq sup(n,empty) = empty .
+eq sup(n,i(n1,s)) = if n == n1 then s else i(n1,sup(n,s)) fi .
+
+eq n in empty = false .
+eq n in i(n1,s) = if n == n1 then true else (n in s) fi .
+
+eq is_empty(empty) = true .
+eq is_empty(i(n,s)) = false .
+
+
+}

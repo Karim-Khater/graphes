@@ -1,0 +1,43 @@
+mod! ENS-NAT {
+extending(NAT)
+[ Ens ]                -- déclaration de la sorte Ens
+
+op ensvide : -> Ens                   -- ensemble vide ... je n'aime pas ensnouv
+op i : Nat Ens -> Ens               -- insertion
+op _ app _ : Nat Ens -> Bool         -- appartenance : notation infixe
+op sup : Nat Ens -> Ens             -- suppression 
+op estvide : Ens -> Bool           -- test de vacuité
+op card : Ens -> Nat                -- cardinal
+op choix : Ens -> Nat               -- choix
+-- preconditions
+-- cafeobj suit une autre approche que les préconditions (les sortes ordonnées)
+-- on ne peut donc indiquer les préconditions qu'en commentaires
+vars n n1 : Nat .
+vars s : Ens .
+** pre i(n, s) = not (n in s )
+** en fait ici, on va employer une équation conditionnelle
+ceq i(n,s) = s if (n app s) .
+
+** suppression
+** on ne met pas de précondition
+** et on utilise un if then else fi
+eq sup(n,ensvide) = ensvide .
+eq sup(n,i(n1,s)) = if n == n1 then s else i(n1,sup(n,s)) fi .
+
+eq n app ensvide = false .
+eq n app i(n1,s) = if n == n1 then true else (n app s) fi .
+
+eq estvide(ensvide) = true .
+eq estvide(i(n,s)) = false .
+
+** Exercice : 
+** préconditions et axiomes pour card
+** précondtiions et axiomes pour choix
+
+eq card(ensvide) = 0 .
+eq card(i(n,s))= 1 + card(s) .
+
+eq choix(ensvide) = ensvide .
+eq choix(s) =  rand() % card(s) .
+ 
+}
